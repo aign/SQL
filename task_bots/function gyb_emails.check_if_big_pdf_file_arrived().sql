@@ -35,7 +35,7 @@ begin
 					raise notice 'page_count = %',_page_count;
 					_js = array[_file_path,_message_uid];
 					raise notice 'json = %',_js;				
-					perform task_bots.create_task (1003, _js);
+					perform task_bots.create_task ('process multi-page pdf', _js);
 					new.attachment_printed = 'TOO MANY PAGES IN PDF FILE NEED TO PROCESS MANUALLY';
 			else 
 				raise notice 'Email_to address is not in address list';

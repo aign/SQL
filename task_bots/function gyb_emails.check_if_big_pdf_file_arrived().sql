@@ -46,8 +46,6 @@ begin
 end;
 $function$;
 
-select 'https://get-file.herokuapp.com/index.php?bucket=revisor1-attachments&name=15fe820a37b155a0_003-1.pdf' like '%.pdf'
-
 create trigger check_if_big_pdf_file_arrived BEFORE INSERT OR UPDATE
         on gyb_emails.attachments
          for each row

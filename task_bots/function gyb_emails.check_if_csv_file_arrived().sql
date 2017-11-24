@@ -18,13 +18,14 @@ begin
 	if  _f_csv = 't' then
 		raise notice 'file_path_csv ';
 		select customer_id from gyb_emails.messages into _customer_id where message_uid = _message_uid and email_to = 'bank@revisor1.dk';
-		if _customer_id is not null then			
-			raise notice 'customer_id = %',_customer_id;
-			_js = array[cast(_customer_id as text),_file_path];
-			raise notice 'json = %',_js;
-			perform task_bots.create_task (91, _js);
-			new.attachment_printed = 'passed to import_csv_file task';
+		if _customer_id is null then
+		  _customer_id =0;
 		end if;
+		raise notice 'customer_id = %',_customer_id;
+		_js = array[cast(_customer_id as text),_file_path];
+		raise notice 'json = %',_js;
+		perform task_bots.create_task (91, _js);
+		new.attachment_printed = 'passed to import_csv_file task';
 	end if;
 	raise notice 'END check_if_csv_file_arrived';
 	return new;

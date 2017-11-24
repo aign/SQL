@@ -24,7 +24,7 @@ begin
 		raise notice 'customer_id = %',_customer_id;
 		_js = array[cast(_customer_id as text),_file_path];
 		raise notice 'json = %',_js;
-		perform task_bots.create_task (91, _js);
+		perform task_bots.create_task ('import_csv_file', _js);
 		new.attachment_printed = 'passed to import_csv_file task';
 	end if;
 	raise notice 'END check_if_csv_file_arrived';

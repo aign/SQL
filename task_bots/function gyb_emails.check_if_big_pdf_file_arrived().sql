@@ -28,7 +28,7 @@ begin
 		if _page_count >10 then
 			select email_to into _email_to from gyb_emails.messages where message_uid = _message_uid;
 			--check email was sent to an address where we should "auto-print" receipts from
-			select count(*) into _address_in_table from gyb_emails.email_addresses_to_process where address = _email_to;
+			select count(*) into _address_in_table from gyb_emails.email_addresses_to_process where address = lower(_email_to);
 			raise notice '_address = %',_email_to;
 			raise notice '_address_in_table = %',_address_in_table;
 			if _address_in_table>0 then

@@ -5,4 +5,4 @@ select * from column_task_description where column_name ='bank@_received_email_w
 insert into  task_manager.task_parameters (task_type_id,parameter_name,data_type)
 values(1006, 'customer_id','int');
 insert into  task_manager.task_parameters (task_type_id,parameter_name,data_type)
-values(1006, 'email_id','text');
+values(1006, 'message_uid','text');

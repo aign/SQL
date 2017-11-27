@@ -4,4 +4,4 @@ values('bank@_received_email_with_pdf_attachment','david', 'bank',true,'Customer
 insert into  task_manager.task_parameters (task_type_id,parameter_name,data_type)
 values(1004, 'customer_id','int');
 insert into  task_manager.task_parameters (task_type_id,parameter_name,data_type)
-values(1004, 'email_id','text');
+values(1004, 'message_uid','text');

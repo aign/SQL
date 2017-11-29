@@ -21,8 +21,9 @@ declare
 	_task_id_to_complete int;
 	_parameters json;
 	begin
-		_worker_initials = 'choose_startup_email_to_send_bot'; -- this is for logging		
-		
+		_worker_initials = 'choose_startup_email_to_send_bot'; -- this is for logging
+		-- select * from task_manager.tasks where id = task_id; -- to get something from current task 		
+		-- select task_bots.create_task ('task_type_name', '{}'); -- to create task of certain task type 
 		
 		--updating the current task for choose_startup_email_to_send_bot as completed
 		update task_manager.tasks set task_status='completed' where id = task_id;

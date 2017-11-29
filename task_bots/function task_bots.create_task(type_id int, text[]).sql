@@ -26,7 +26,7 @@ begin
 		raise notice 'params values = %',_param_values;
 		raise notice '%',_str; 
 	    raise notice '%',_p_v;
-		insert into tasks (name,worker_initials,parameters ) values (_name, _freelancer,_p_v);
+		insert into tasks (name,worker_initials,parameters,task_type_id ) values (_name, _freelancer, _p_v, type_id);
 		return true;
 	else
 		raise notice 'Task type % not found',task_type;

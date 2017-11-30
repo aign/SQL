@@ -23,7 +23,7 @@ insert into  task_manager.task_parameters (task_type_id,parameter_name,data_type
 
 
 --------------------------------------------------
-CREATE OR REPLACE FUNCTION task_bots.send_email_bot(task_id int)
+CREATE OR REPLACE FUNCTION task_bots.send_email_bot(task_id integer)
  RETURNS boolean
  LANGUAGE plpgsql
 AS $function$
@@ -34,26 +34,27 @@ declare
 	_task_type_id int;
 	_parameters json;
 	_parameter text;
-	_param_value text;
+	_param_value int;
 	_sqlstr text;
 	_query text;
-	_view_name text;
 	_email_address text;
 	_ultradox text;
+	task_description_variables hstore;
 begin
 		_worker_initials = 'send_email_bot'; -- this is for logging
+		----- getting all needed info
 		select task_type_id , parameters  into _task_type_id, _parameters from task_manager.tasks where id = task_id;
 		select parameter_name into _parameter from task_manager.task_parameters where task_type_id=_task_type_id;
-		select query_to_get_variables , view_name, ultradox into _query,_view_name, _ultradox from task_manager.column_task_description where id=_task_type_id;
+		select query_to_get_variables , ultradox into _query, _ultradox from task_manager.column_task_description where id=_task_type_id;
+		
+		--getting id from parameter 
 		_sqlstr = $$ select  '$$||_parameters||$$'::json ->> '$$|| _parameter||$$'$$;
 		execute _sqlstr into _param_value;
-		_query = replace(_query, '$1', _view_name);
-		_query= replace(_query, '$2', _param_value);
-		execute _query into _email_address;
-		if  _email_address is null then 
-			raise exception 'Can not find email for %  = %', _parameter ,_param_value;
-		end if;
-		insert into actions (templateurl, action_parameters) values (_ultradox, hstore('query_that_failed', ' ') || hstore('primary_email', _email_address) || hstore('description', ' '));
+		
+		execute _query into task_description_variables using _param_value;
+		
+		insert into actions (templateurl, action_parameters) 
+			values (_ultradox, task_description_variables);
 		notify emailer;
 		--updating the current task for send_email_bot as completed
 		update task_manager.tasks set task_status='completed' where id = task_id;
@@ -66,7 +67,7 @@ begin
 		update task_manager.tasks set task_status='completed_failure' where id = task_id;
 		return false;
 	end;
-$function$;
+$function$
 -----------------------
 -- Test create task of 'choose_startup_email_to_send' type
 -- select task_bots.create_task ('deleteme_send_random_email_freelancer', '{29}');

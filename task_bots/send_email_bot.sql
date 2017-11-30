@@ -40,6 +40,8 @@ declare
 	_email_address text;
 	_ultradox text;
 	task_description_variables hstore;
+	_query_prefix text;
+	_query_suffix text;
 begin
 		_worker_initials = 'send_email_bot'; -- this is for logging
 		----- getting all needed info
@@ -50,7 +52,11 @@ begin
 		--getting id from parameter 
 		_sqlstr = $$ select  '$$||_parameters||$$'::json ->> '$$|| _parameter||$$'$$;
 		execute _sqlstr into _param_value;
-		
+		--preparing the query
+		_query_prefix = $$with results as ( $$;		
+		_query_suffix = $$ ) select hstore(results.*) from results $$;
+		_query =_query_prefix || _query ||_query_suffix;
+		--getting the variables
 		execute _query into task_description_variables using _param_value;
 		
 		insert into actions (templateurl, action_parameters) 

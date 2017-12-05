@@ -9,7 +9,6 @@ declare
 	_tablename_short text;
 	_new_tablename text;
 begin
-	raise notice 'starting  compare_uids';
 	_tablename = 'task_bots.cached_'||task_name;
 	_tablename_short= 'cached_'||task_name; -- because alter table does not get schema name in tbale name
 	_new_tablename = 'task_bots.new_cached_'||task_name;

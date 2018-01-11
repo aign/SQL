@@ -9,6 +9,8 @@ declare
 	_js text[];
 	_f_csv boolean;
 	_mail_exist boolean;
+	_subject text;
+	_email text;
 begin	
 	raise notice 'START check_if_csv_file_arrived';
 	select new.attachment_path , new.message_uid into _file_path, _message_uid;
@@ -16,17 +18,15 @@ begin
 	raise notice 'file_path = %',_file_path;
 	_f_csv = _file_path like '%.csv';
 	raise notice 'file_path_csv = %',_f_csv;
-	if  _f_csv = 't' then
-		raise notice 'file_path_csv ';
-		select count(customer_id)>0 from gyb_emails.messages into _mail_exist where message_uid = _message_uid and lower(email_to) = 'bank@revisor1.dk';
+	if  _f_csv = 't' then		
+		select count(message_uid)>0 from gyb_emails.messages into _mail_exist where message_uid = _message_uid and lower(email_to) = 'bank@revisor1.dk';
 		if _mail_exist = true then
-			select customer_id from gyb_emails.messages into _customer_id where message_uid = _message_uid and lower(email_to) = 'bank@revisor1.dk';
+			select customer_id,email_subject from gyb_emails.messages into _customer_id, _subject where message_uid = _message_uid;			
+			raise notice 'customer_id = %',_customer_id;
 			if _customer_id is null then
 		  		_customer_id =0;
 			end if;
-			raise notice 'customer_id = %',_customer_id;
 			_js = array[cast(_customer_id as text),_file_path];
-			raise notice 'json = %',_js;
 			perform task_bots.create_task ('import_csv_file', _js);
 			new.attachment_printed = 'passed to import_csv_file task';
 		end if;	

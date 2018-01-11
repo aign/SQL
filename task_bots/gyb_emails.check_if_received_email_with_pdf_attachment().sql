@@ -9,6 +9,8 @@ _file_path text;
 	_js text[];
 	_f_pdf boolean;
 	_mail_exist boolean;
+	_subject text;
+	_email text;
 begin	
 	raise notice 'START check_if_received_email_with_pdf_attachment';
 	select new.attachment_path , new.message_uid into _file_path, _message_uid;
@@ -19,11 +21,12 @@ begin
 	if  _f_pdf = true then
 		raise notice 'file_path_pdf ';
 		select count(customer_id)>0 from gyb_emails.messages into _mail_exist where message_uid = _message_uid and lower(email_to) = 'bank@revisor1.dk';
-		if _mail_exist = true then
-			select customer_id from gyb_emails.messages into _customer_id where message_uid = _message_uid and lower(email_to) = 'bank@revisor1.dk';
+		if _mail_exist = true THEN		
+			select customer_id,email_subject from gyb_emails.messages into _customer_id,_subject where message_uid = _message_uid and lower(email_to) = 'bank@revisor1.dk';
 			if _customer_id is null then
 		  		_customer_id =0;
 			end if;
+
 			raise notice 'customer_id = %',_customer_id;
 			_js = array[cast(_customer_id as text),_file_path];
 			raise notice 'json = %',_js;

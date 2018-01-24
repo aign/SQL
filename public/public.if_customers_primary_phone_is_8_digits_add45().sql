@@ -1,9 +1,8 @@
-create or replace function temp.check_if_primary_phone_is_8_digits()
+create or replace function public.if_customers_primary_phone_is_8_digits_add45()
 	returns trigger
  	LANGUAGE plpgsql
 AS $function$
 declare
-	_address_in_table int;
 	_primary_phone text;
 begin		 
 		select new.primary_phone into _primary_phone;
@@ -16,8 +15,7 @@ begin
 end;
 $function$;
 
-create trigger check_if_primary_phone_is_8_digits BEFORE INSERT OR UPDATE
-        on temp.customers_test
+create trigger if_customers_primary_phone_is_8_digits_add45 BEFORE INSERT OR UPDATE
+        on public.customers
          for each row
-         execute procedure check_if_primary_phone_is_8_digits();
-
+         execute procedure if_customers_primary_phone_is_8_digits_add45();

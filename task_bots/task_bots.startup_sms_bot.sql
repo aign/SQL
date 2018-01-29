@@ -19,13 +19,13 @@ begin
 		select count(id)>0 into _customer_exists from public.customers where id= _customer_id;
 		if _customer_exists then
 			perform task_bots.send_sms(_customer_id , _sms_text);
-			insert into task_bots.logs(botname,"action","result") values (_worker_initials,'SMS sent text '||cast(_sms_text as text)||' for customer '||cast(_customer_id as text)||' task '||cast(task_id as text),'success');
+			insert into task_bots.logs(botname,"action","result") values (_worker_initials,'SMS send text '||cast(_sms_text as text)||' for customer '||cast(_customer_id as text)||' task '||cast(task_id as text),'success');
 			update task_manager.tasks set task_status='completed' where id = task_id;
 			return true;
 		else raise exception 'Customer does not exists !';
 		end if;
 exception when others then
-		insert into task_bots.logs(botname,"action","result") values (_worker_initials,'SMS sent text '||cast(_sms_text as text)||' for customer '||cast(_customer_id as text)||' task '||cast(task_id as text)||' ERROR:'||SQLERRM,'failed');
+		insert into task_bots.logs(botname,"action","result") values (_worker_initials,'SMS send text '||cast(_sms_text as text)||' for customer '||cast(_customer_id as text)||' task '||cast(task_id as text)||' ERROR:'||SQLERRM,'failed');
 		update task_manager.tasks set task_status='completed_failure' where id = task_id;
 		return false;	
 end;

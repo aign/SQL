@@ -21,6 +21,7 @@ begin
 	notify emailer;
 	return true;
 	exception when others then
+		insert into task_bots.logs(botname,"action","result") values ('send_sms_function','SMS send text '||cast(_sms_text as text)||' for customer '||cast(_customer_id as text)||' task '||cast(task_id as text)||' ERROR:'||SQLERRM,'failed');
 		return false;
 end;
 $function$

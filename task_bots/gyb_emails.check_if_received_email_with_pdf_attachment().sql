@@ -1,6 +1,11 @@
-create or replace function gyb_emails.check_if_received_email_with_pdf_attachment()
-	returns trigger
- 	LANGUAGE plpgsql
+select * from task_manager.column_task_description where column_name = 'bank@_received_email_with_pdf_attachment'
+
+select * from task_manager.task_parameters where task_type_id = 1004 
+insert into task_manager.task_parameters (task_type_id, parameter_name,data_type) values (1004,'file_path','text')
+
+CREATE OR REPLACE FUNCTION gyb_emails.check_if_received_email_with_pdf_attachment()
+ RETURNS trigger
+ LANGUAGE plpgsql
 AS $function$
 declare
 _file_path text;
@@ -28,7 +33,7 @@ begin
 			end if;
 
 			raise notice 'customer_id = %',_customer_id;
-			_js = array[cast(_customer_id as text),_file_path];
+			_js = array[cast(_customer_id as text),_message_uid,_file_path];
 			raise notice 'json = %',_js;
 			perform task_bots.create_task ('bank@_received_email_with_pdf_attachment', _js);
 			new.attachment_printed = 'passed to bank@_received_email_with_pdf_attachment task';
@@ -37,10 +42,4 @@ begin
 	raise notice 'END check_if_received_email_with_pdf_attachment';
 	return new;
 	end;
-$function$;
-
-create trigger check_if_received_email_with_pdf_attachment BEFORE INSERT OR UPDATE
-        on gyb_emails.attachments
-         for each row
-         execute procedure check_if_received_email_with_pdf_attachment();
-         
+$function$

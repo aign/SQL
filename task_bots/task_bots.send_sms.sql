@@ -26,3 +26,4 @@ begin
 end;
 $function$
 
+select task_bots.send_sms(200370,'test')

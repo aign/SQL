@@ -12,8 +12,6 @@ begin
 	select window_name into _window_name from gui.window_state 
 	where cells_selected->0->>1 = 'primary_email' and username = current_setting('session.username') 
 	order by last_updated desc limit 1;
-
-
 	select TRIM (
  		trailing ';'
  		FROM ((regexp_split_to_array(substring( query, position('from ' in query)+5 ,20),' ') )[1])
@@ -28,6 +26,8 @@ begin
 	_sqlstr = 'select '||column_name||' from '||_view_name||' where id = '||_id;
 	execute _sqlstr into _result;
 	return _result;
+exception when others then 
+	return null;
 end;
 $function$
 

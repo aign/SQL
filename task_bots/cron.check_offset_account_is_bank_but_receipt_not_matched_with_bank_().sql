@@ -13,7 +13,9 @@ declare
 begin
 	_name = 'offset_account_is_bank_but_receipt_not_matched_with_bank_transaction';
 	_res = task_bots.compare_uids_new(_name, $$
-							select receipts.id as unique_id, the_accountant from receipts left join reconciliations on (receipt_id = receipts.id) left join customers on (customer_id = customers.id) where offset_account = 5820 and (bank_transaction_id is null or bank_transaction_id = -1) and deleted = false 
+							select receipts.id as unique_id, the_accountant from public.receipts 
+								left join public.reconciliations on (receipt_id = receipts.id) 
+								left join public.customers on (customer_id = customers.id) where offset_account = 5820 and (bank_transaction_id is null or bank_transaction_id = -1) and deleted = false 
 							$$::text);
 	--results are returned as json arrays
 	--for example  {"unique_id":[1003547,1003548],"the_accountant":["jens","someone"]}
@@ -27,9 +29,14 @@ begin
 	if ((_item::text) != 'null' ) then
 		--to access any desired array yo have to convert it from json to postgres array by 
 		--calling this select array_agg(value) into _ids from json_array_elements(_res ->'unique_id'); 
-		--where _res ->'unique_id' - is array of values returned for column unique_id  
-		select array_agg(value) into _ids from json_array_elements(_res ->'unique_id');
-		select array_agg(value) into _values from json_array_elements(_res ->'the_accountant');
+		--where _res ->'unique_id' - is array of values returned for column unique_id
+		SELECT ARRAY(SELECT trim(elem::text, '"') into _ids 
+                     FROM   json_array_elements(_res->'unique_id') elem) AS txt_arr;
+		SELECT ARRAY(SELECT trim(elem::text, '"') into _values  
+                     FROM   json_array_elements(_res->'the_accountant') elem) AS txt_arr;
+  
+		--select array_agg(value) into _ids from json_array_elements(_res ->'unique_id');
+		--select array_agg(value) into _values from json_array_elements(_res ->'the_accountant');
 		perform utils.create_task_from_array(_ids,_name,_values);
 	end if;
 end 

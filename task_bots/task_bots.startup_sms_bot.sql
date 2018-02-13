@@ -26,7 +26,7 @@ begin
 		-- if  'sms_text' of this task is NOT null then it will send sms with text from 'sms_text' parameter
 		-- for example select task_bots.create_task('startup_sms'::text,array['200370','Some Text']);
 		botname = 'startup_sms_bot';
-		task_type_name = 'startup_sms';
+		task_type_name = 'send_sms';
 		select parameters->>'customer_id',parameters->>'sms_text', worker_initials into _customer_id, _sms_text ,_worker_initials 
 				from task_manager.tasks where id  = task_id;
 		select  task_description, ultradox,query_to_get_variables,view_name 
@@ -54,3 +54,12 @@ exception when others then
 		return false;	
 end;
 $function$;
+
+
+select * from task_manager.column_task_description where column_name like '%sms%'
+
+select * from public.customers where id =2
+
+select task_bots.create_task('startup_sms'::text,array['2',null]);
+
+select * from emails.actions order by id desc
